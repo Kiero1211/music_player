@@ -9,6 +9,8 @@ const audio = $("audio");
 const playBtn = $(".btn-toggle-play");
 const player = $(".player");
 const progress = $("#progress");
+const prevBtn = $(".btn-prev");
+const nextBtn = $(".btn-next");
 
 
 const app = {
@@ -136,6 +138,17 @@ const app = {
             let newTime = (audio.duration / 100) * clickedPercent;
             audio.currentTime = newTime;
         }
+
+        //Handle next & prev btn
+        nextBtn.onclick = () => {
+            app.nextSong();
+            audio.play();
+        }
+
+        prevBtn.onclick = () => {
+            app.prevSong();
+            audio.play();
+        }
     },
 
     defineProperties: function() {
@@ -150,6 +163,24 @@ const app = {
         header.innerText = this.getCurrentSong.name;
         songThumbnail.style.backgroundImage = `url("${this.getCurrentSong.image}")`;
         audio.src = this.getCurrentSong.path;
+    },
+
+    nextSong: function() {
+        if (this.currentIndex < this.songs.length - 1) {
+            this.currentIndex++;
+        } else {
+            this.currentIndex = 0;
+        }
+        app.loadCurrentSong();
+    },
+    
+    prevSong: function() {
+        if (this.currentIndex > 0) {
+            this.currentIndex--;
+        } else {
+            this.currentIndex = this.songs.length - 1;
+        }
+        app.loadCurrentSong();
     },
 
     start: function() {
