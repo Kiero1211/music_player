@@ -66,9 +66,25 @@ const app = {
         });
         $(".playlist").innerHTML = html.join('');
     },
+
+    scrollHandler: function() {
+        const cd = $(".cd");
+        const cdWidth = cd.offsetWidth;
+
+        document.onscroll = function() {
+            let scrollTop = window.scrollY || document.documentElement.scrollTop;
+            
+            let newCdWidth = (cdWidth - scrollTop) > 0 ? (cdWidth - scrollTop) : 0;
+            cd.style.width = newCdWidth + "px";
+            cd.style.opacity = newCdWidth / cdWidth;
+        }
+    },
+
     start: function() {
+        this.scrollHandler();
         this.render();
-    }
+    },
+    
 }
 
 app.start();
