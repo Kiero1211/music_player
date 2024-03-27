@@ -1,8 +1,19 @@
 const $ = document.querySelector.bind(document);
 const $$ = document.querySelectorAll.bind(document);
 
+//Get common elements
+const cd = $(".cd");
+const header = $("header h2");
+const songThumbnail = $(".cd-thumb");
+const audio = $("audio");
+const playBtn = $(".btn-toggle-play");
+const player = $(".player");
+const progress = $("#progress");
+
 
 const app = {
+    currentIndex: 1,
+    isPlaying: false,
     songs: [
         {
             name: "Look what you made me do",
@@ -67,10 +78,18 @@ const app = {
         $(".playlist").innerHTML = html.join('');
     },
 
-    scrollHandler: function() {
-        const cd = $(".cd");
+    eventHandler: function() {
         const cdWidth = cd.offsetWidth;
 
+        const songThumbnailAnimate = songThumbnail.animate([
+            {transform: "rotate(360deg)"}
+        ], {
+            duration: 10000, // 10 seconds
+            iterations: Infinity
+        })
+        songThumbnailAnimate.pause();
+
+        //Handling scroll event
         document.onscroll = function() {
             let scrollTop = window.scrollY || document.documentElement.scrollTop;
             
@@ -78,11 +97,74 @@ const app = {
             cd.style.width = newCdWidth + "px";
             cd.style.opacity = newCdWidth / cdWidth;
         }
+
+        //Handling clicking playbtn event
+        playBtn.onclick = () => {
+            if (app.isPlaying) {
+                audio.pause();
+                songThumbnailAnimate.pause();
+            } else {
+                audio.play();
+                songThumbnailAnimate.play();
+            }
+        };
+
+        //Process when audio is playing
+        audio.onplay = () => {
+            app.isPlaying = true;
+            player.classList.add("playing");
+        };
+
+        //Process when audio is paused
+        audio.onpause = () => {
+            app.isPlaying = false;
+            player.classList.remove("playing");
+        };
+
+
+        //Keep updating the progress bar
+        audio.ontimeupdate = () => {
+            if (audio.duration) {
+                let progressPercent = audio.currentTime / audio.duration * 100;
+                progress.value = progressPercent;
+            }
+        };
+        
+        //Process when user click on the progress bar
+        progress.oninput = (e) => {
+            let clickedPercent = e.target.value;
+            let newTime = (audio.duration / 100) * clickedPercent;
+            audio.currentTime = newTime;
+        }
+    },
+
+    defineProperties: function() {
+        Object.defineProperty(this, "getCurrentSong", {
+            get: function () {
+                return this.songs[this.currentIndex];
+            }
+        })
+    },
+
+    loadCurrentSong: function() {
+        header.innerText = this.getCurrentSong.name;
+        songThumbnail.style.backgroundImage = `url("${this.getCurrentSong.image}")`;
+        audio.src = this.getCurrentSong.path;
     },
 
     start: function() {
-        this.scrollHandler();
+        //Handle all events
+        this.eventHandler();
+
+        //Define method to get current song
+        this.defineProperties();
+
+        //Load current song
+        this.loadCurrentSong();
+
+        //Load all songs
         this.render();
+        
     },
     
 }

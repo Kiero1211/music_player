@@ -99,6 +99,7 @@ header h2 {
 }
 
 .control .btn-toggle-play {
+	cursor: pointer;
 	width: 56px;
 	height: 56px;
 	border-radius: 50%;
