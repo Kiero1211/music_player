@@ -11,11 +11,12 @@ const player = $(".player");
 const progress = $("#progress");
 const prevBtn = $(".btn-prev");
 const nextBtn = $(".btn-next");
-
+const randomBtn = $(".btn-random");
 
 const app = {
     currentIndex: 1,
     isPlaying: false,
+    isRandom: false,
     songs: [
         {
             name: "Look what you made me do",
@@ -141,14 +142,28 @@ const app = {
 
         //Handle next & prev btn
         nextBtn.onclick = () => {
-            app.nextSong();
+            if (app.isRandom) {
+                app.playRandom();
+            } else {
+                app.nextSong();
+            }
             audio.play();
         }
 
         prevBtn.onclick = () => {
-            app.prevSong();
+            if (app.isRandom) {
+                app.playRandom();
+            } else {
+                app.prevSong();
+            }
             audio.play();
         }
+
+        //Handle shuffle button
+        randomBtn.onclick = () => {
+            app.isRandom = !app.isRandom;
+            randomBtn.classList.toggle("active");
+        };
     },
 
     defineProperties: function() {
@@ -180,6 +195,15 @@ const app = {
         } else {
             this.currentIndex = this.songs.length - 1;
         }
+        app.loadCurrentSong();
+    },
+
+    playRandom: function() {
+        let newIdx;
+        do {
+            newIdx = Math.floor(Math.random() * this.songs.length);
+        } while (newIdx === this.currentIndex);
+        this.currentIndex = newIdx;
         app.loadCurrentSong();
     },
 
