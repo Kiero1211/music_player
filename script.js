@@ -61,6 +61,7 @@ const app = {
             image: "./assets/img/LRCKN.jpeg"
         },
     ],
+    repeatedSongs: this.playedSongs,
     render: function() {
         const html = this.songs.map(song => {
             return `
@@ -124,6 +125,10 @@ const app = {
             player.classList.remove("playing");
         };
 
+        audio.onended = () => {
+            nextBtn.click();
+        }
+
 
         //Keep updating the progress bar
         audio.ontimeupdate = () => {
@@ -178,6 +183,12 @@ const app = {
         header.innerText = this.getCurrentSong.name;
         songThumbnail.style.backgroundImage = `url("${this.getCurrentSong.image}")`;
         audio.src = this.getCurrentSong.path;
+
+        //Handle played songs
+        playedSongs[this.currentIndex]++;
+        if (this.isFullList(playedSongs)) {
+            playedSongs.fill(0);
+        }
     },
 
     nextSong: function() {
@@ -202,9 +213,18 @@ const app = {
         let newIdx;
         do {
             newIdx = Math.floor(Math.random() * this.songs.length);
-        } while (newIdx === this.currentIndex);
+        } while (newIdx === this.currentIndex || playedSongs[newIdx] !== 0);
         this.currentIndex = newIdx;
         app.loadCurrentSong();
+    },
+
+    isFullList: function(list) {
+        for (let value of list) {
+            if (value === 0) {
+                return false;
+            }
+        }
+        return true;
     },
 
     start: function() {
@@ -223,5 +243,6 @@ const app = {
     },
     
 }
+let playedSongs = new Array(app.songs.length).fill(0)
 
 app.start();
