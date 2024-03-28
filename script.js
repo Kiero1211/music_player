@@ -33,8 +33,8 @@ const app = {
         {
             name: "Love story",
             singer: "Taylor Swift",
-            path: "./assets/music/Love_story.mp3",
-            image: "./assets/img/Love_story.jpeg"
+            path: "./assets/music/Love_Story.mp3",
+            image: "./assets/img/Love_Story.jpeg"
         },
         {
             name: "Wildest dreams",
